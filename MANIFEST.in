@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include trupper *.css
+recursive-include trupper *.csv
+recursive-include trupper *.html
+recursive-include trupper *.ico
+recursive-include trupper *.js
+recursive-include trupper *.json
+recursive-include trupper *.md
+recursive-include trupper *.png
+recursive-include trupper *.py
+recursive-include trupper *.svg
+recursive-include trupper *.txt
+recursive-exclude trupper *.pyc
