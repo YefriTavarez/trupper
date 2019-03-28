@@ -90,23 +90,23 @@ app_license = "General Public License, v3"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"trupper.tasks.all"
-# 	],
-# 	"daily": [
-# 		"trupper.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"trupper.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"trupper.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"trupper.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+	"all": [
+		"trupper.tasks.all"
+	],
+	"daily": [
+		"trupper.tasks.daily"
+	],
+	"hourly": [
+		"trupper.tasks.hourly"
+	],
+	"weekly": [
+		"trupper.tasks.weekly"
+	],
+	"monthly": [
+		"trupper.tasks.monthly"
+	]
+}
 
 # Testing
 # -------
