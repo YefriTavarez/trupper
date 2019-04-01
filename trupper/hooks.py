@@ -16,7 +16,7 @@ app_license = "General Public License, v3"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/trupper/css/trupper.css"
-# app_include_js = "/assets/trupper/js/trupper.js"
+app_include_js = "/assets/trupper/js/trupper.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/trupper/css/trupper.css"
@@ -26,7 +26,9 @@ app_license = "General Public License, v3"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Sales Invoice" : "public/js/sales_invoice.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
