@@ -71,7 +71,7 @@ def after_install():
 	_add_standard_discount_terms_template()
 
 def _add_standard_discount_terms():
-	from frappe import db
+	from frappe import db, new_doc
 
 	# set doctype at the top
 	doctype = "Discount Term"
@@ -91,7 +91,7 @@ def _add_standard_discount_terms():
 			continue
 
 		# create an empty doc
-		doc = frappe.new_doc(doctype)
+		doc = new_doc(doctype)
 
 		# update with the JSON record
 		doc.update(term)
@@ -101,7 +101,7 @@ def _add_standard_discount_terms():
 
 
 def _add_standard_discount_terms_template():
-	from frappe import db
+	from frappe import db, new_doc
 
 	# set doctype at the top
 	doctype = "Discount Terms Template"
@@ -121,7 +121,7 @@ def _add_standard_discount_terms_template():
 			continue
 
 		# create an empty doc
-		doc = frappe.new_doc(doctype)
+		doc = new_doc(doctype)
 
 		# update with the JSON record
 		doc.update(term)
