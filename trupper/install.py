@@ -82,13 +82,13 @@ def _add_standard_discount_terms():
 
 		# check the database to see if it exists
 		exists = db.exists(doctype, {
-		    "discount_term_name": term.get("discount_term_name"),
-        })
+			"discount_term_name": term.get("discount_term_name"),
+		})
 
 		# if the records exists let's skip it
 		# to prevent an error
-        if exists:
-        	continue
+		if exists:
+			continue
 
 		# create an empty doc
 		doc = frappe.new_doc(doctype)
@@ -112,13 +112,13 @@ def _add_standard_discount_terms_template():
 
 		# check the database to see if it exists
 		exists = db.exists(doctype, {
-		    "template_name": term.get("template_name"),
-        })
+			"template_name": term.get("template_name"),
+		})
 
 		# if the records exists let's skip it
 		# to prevent an error
-        if exists:
-        	continue
+		if exists:
+			continue
 
 		# create an empty doc
 		doc = frappe.new_doc(doctype)
