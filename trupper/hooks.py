@@ -56,8 +56,8 @@ doctype_js = {
 # Installation
 # ------------
 
-# before_install = "trupper.install.before_install"
-# after_install = "trupper.install.after_install"
+before_install = "trupper.install.before_install"
+after_install = "trupper.install.after_install"
 
 # Desk Notifications
 # ------------------
