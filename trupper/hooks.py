@@ -13,6 +13,23 @@ app_license = "General Public License, v3"
 
 # Includes in <head>
 # ------------------
+fixtures = [
+	{
+		"doctype": "Custom Field",
+		"filters": {
+			"name": ("in",
+			    (
+					"Sales Invoice-discount_schedule",
+					"Sales Invoice-discount_terms_template",
+					"Sales Invoice-discount_section",
+				)
+			)
+		}
+
+	}
+]
+# Includes in <head>
+# ------------------
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/trupper/css/trupper.css"
