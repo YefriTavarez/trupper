@@ -13,6 +13,29 @@ __all__ = [
 	"submit_unpaid_invoices",
 ]
 
+"""
+Status [Solved]
+
+Problem
+	Invoices with due date greater than
+		any of the discount term will not come
+		into account for the background job.
+
+	In other words, only those invoices that are overdue
+		are the ones that the job will take in consideration.
+		The problem with this is that due dates for invoice payment
+		should always be greater than any discount term,
+		as when the invoice is due the customer should not
+		have any discount applied.
+
+Solution
+	If the invoice has any discount term, then
+	check if it has any overdue and then remove the discount.
+
+	Or if the invoice does not have any discount term
+	and invoice is due,	then remove the discount.
+
+"""
 
 def get_unpaid_invoices():
 	"""Search the overdue invoices
@@ -23,8 +46,7 @@ def get_unpaid_invoices():
 		list: A list of Overdue invoices
 	"""
 
-	from frappe import get_all, \
-			get_doc
+	from frappe import db, get_doc
 
 	from frappe.utils import today
 
@@ -34,43 +56,55 @@ def get_unpaid_invoices():
 
 	# Let's do the fetch from the Database of all the IDs
 
-	unpaid_invoices = get_all(doctype, {
-		"docstatus": ("=", "1"),
-		"outstanding_amount": (">", .000),
-		"due_date": ("<", today()),
-	}, as_list=True)
+	unpaid_invoices = db.sql(
+		"""
+			Select
+				`tabSales Invoice`.name
+			From
+				`tabSales Invoice`
+			Where
+				`tabSales Invoice`.docstatus = 1
+				And name in (
+					Select
+						Distinct(
+							`tabDiscount Schedule`.parent
+						) As parent
+					From
+						`tabDiscount Schedule`
+					Where
+						`tabDiscount Schedule`.parenttype = "Sales Invoice"
+						And `tabDiscount Schedule`.parentfield = "discount_schedule"
+						And `tabDiscount Schedule`.due_date < %(today)s
+				) Or (
+					`tabSales Invoice`.outstanding_amount > 0
+					And `tabSales Invoice`.due_date < %(today)s
+					And (
+						`tabSales Invoice`.discount_amount > 0
+						Or Exists (
+							Select
+								`tabSales Invoice Item`.name
+							From
+								`tabSales Invoice Item`
+							Where
+								`tabSales Invoice Item`.discount_amount > 0
+								And `tabSales Invoice Item`.parentfield = "items"
+								And `tabSales Invoice Item`.parenttype = "Sales Invoice"
+								And `tabSales Invoice Item`.parent = `tabSales Invoice`.name
+						)
+					)
+					And `tabSales Invoice`.name not in (
+						Select
+							`tabCancelled Invoices`.name
+						From
+							`tabCancelled Invoices`
+					)
+				)
+		""", { "today": today() })
 
-	# Please don't change from a list to a tuple
-	cancelled_invoices = [d.name for d in get_all("Cancelled Invoices")]
+	# now it's a good time to delete the overdue discount terms
+	_delete_overdue_discounts_terms()
 
-	# return a list of docs instead of a list of data
-
-	for docname, in unpaid_invoices:
-
-		doc = get_doc(doctype, docname)
-
-		# If the invoice does not have any discount, we should not cancel it
-		# nor edit it.
-		#
-		# To achieve this: We add the docname of the unpaid invoice
-		# To the cancelled_invoices list to prevent from
-		# Cancelling as it does not have any discount
-		#
-		# If the discount is less than or equal to zero and
-		# All of its children have discount less than or equal to zero
-		# We should definitely tell the system to skip it.
-
-		if not doc.discount_amount > .000 \
-			and _has_not_any_discount(doc.items):
-
-			# Tell the system to skip it
-			cancelled_invoices.append(docname)
-
-	return [
-		get_doc(doctype, docname)
-		for docname, in unpaid_invoices
-		if docname not in cancelled_invoices
-	]
+	return [ get_doc(doctype, docname) for docname, in unpaid_invoices ]
 
 
 def cancel_unpaid_invoices(unpaid_invoices):
@@ -206,3 +240,20 @@ def _has_not_any_discount(items):
 
 	# Does not have any unless otherwise is proven
 	return does_not_has
+
+def _delete_overdue_discounts_terms():
+	from frappe import db
+	from frappe.utils import today
+
+	db.sql(
+		"""
+			Delete
+			From
+				`tabDiscount Schedule`
+			Where
+				`tabDiscount Schedule`.parenttype = "Sales Invoice"
+				And `tabDiscount Schedule`.parentfield = "discount_schedule"
+				And `tabDiscount Schedule`.due_date < %(today)s
+		""",
+		{ "today": today() }
+	)
