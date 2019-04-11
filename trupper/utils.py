@@ -50,20 +50,18 @@ def get_unpaid_invoices():
 
 	from frappe.utils import today
 
-	# Main doctype that we are going to be working with
-
-	doctype = "Sales Invoice"
-
 	# Let's do the fetch from the Database of all the IDs
 
 	unpaid_invoices = db.sql(
-		"""
+		"""(
 			Select
-				`tabSales Invoice`.name
+				`tabSales Invoice`.name,
+				"Sales Invoice" As doctype
 			From
 				`tabSales Invoice`
 			Where
 				`tabSales Invoice`.docstatus = 1
+				And `tabSales Invoice`.outstanding_amount > 0
 				And name in (
 					Select
 						Distinct(
@@ -75,36 +73,35 @@ def get_unpaid_invoices():
 						`tabDiscount Schedule`.parenttype = "Sales Invoice"
 						And `tabDiscount Schedule`.parentfield = "discount_schedule"
 						And `tabDiscount Schedule`.due_date < %(today)s
-				) Or (
-					`tabSales Invoice`.outstanding_amount > 0
-					And `tabSales Invoice`.due_date < %(today)s
-					And (
-						`tabSales Invoice`.discount_amount > 0
-						Or Exists (
-							Select
-								`tabSales Invoice Item`.name
-							From
-								`tabSales Invoice Item`
-							Where
-								`tabSales Invoice Item`.discount_amount > 0
-								And `tabSales Invoice Item`.parentfield = "items"
-								And `tabSales Invoice Item`.parenttype = "Sales Invoice"
-								And `tabSales Invoice Item`.parent = `tabSales Invoice`.name
-						)
-					)
-					And `tabSales Invoice`.name not in (
-						Select
-							`tabCancelled Invoices`.name
-						From
-							`tabCancelled Invoices`
-					)
 				)
+		) Union (
+			Select
+				`tabPurchase Invoice`.name,
+				"Purchase Invoice" As doctype
+			From
+				`tabPurchase Invoice`
+			Where
+				`tabPurchase Invoice`.docstatus = 1
+				And `tabPurchase Invoice`.outstanding_amount > 0
+				And name in (
+					Select
+						Distinct(
+							`tabDiscount Schedule`.parent
+						) As parent
+					From
+						`tabDiscount Schedule`
+					Where
+						`tabDiscount Schedule`.parenttype = "Purchase Invoice"
+						And `tabDiscount Schedule`.parentfield = "discount_schedule"
+						And `tabDiscount Schedule`.due_date < %(today)s
+				)
+			)
 		""", { "today": today() })
 
 	# now it's a good time to delete the overdue discount terms
 	_delete_overdue_discounts_terms()
 
-	return [ get_doc(doctype, docname) for docname, in unpaid_invoices ]
+	return [ get_doc(doctype, docname) for docname, doctype in unpaid_invoices ]
 
 
 def cancel_unpaid_invoices(unpaid_invoices):
@@ -186,33 +183,6 @@ def remove_discount_to_unpaid_invoices(draft_invoices):
 			doc.discount_amount = \
 			doc.base_discount_amount = .000
 
-		for d in doc.items:
-			# Discount formula
-
-			# 200 - 200 * (10 / 100) = 180
-			#
-			# x = 200
-			# i = 10
-			# s = 180
-			#
-			# x - x * (i / 100) = s
-			#
-			# x (1 - (i / 100)) = s
-			# x = s / (1 - (i / 100))
-			# x = 180 / (1 - (10 / 100.00))
-			#
-			# Update Rate back to its aprox. Original amount
-
-			if flt(d.price_list_rate):
-				d.rate = flt(d.price_list_rate)
-			else:
-				d.rate = d.rate / (1 - (d.discount_percentage / 100))
-
-			# For each row let's clear the
-			# Discount_percentage
-
-			d.discount_percentage = .000
-
 		# Leave a comment
 
 		doc.add_comment("Update", _("Cleared discounts"))
@@ -229,18 +199,6 @@ def submit_unpaid_invoices(draft_invoices):
 
 		doc.submit()
 
-def _has_not_any_discount(items):
-	from frappe.utils import flt
-
-	does_not_has = False
-
-	for d in items:
-		if flt(d.discount_percentage) <= .000:
-			does_not_has = True
-
-	# Does not have any unless otherwise is proven
-	return does_not_has
-
 def _delete_overdue_discounts_terms():
 	from frappe import db
 	from frappe.utils import today
@@ -251,7 +209,7 @@ def _delete_overdue_discounts_terms():
 			From
 				`tabDiscount Schedule`
 			Where
-				`tabDiscount Schedule`.parenttype = "Sales Invoice"
+				`tabDiscount Schedule`.parenttype in ("Purchase Invoice", "Sales Invoice")
 				And `tabDiscount Schedule`.parentfield = "discount_schedule"
 				And `tabDiscount Schedule`.due_date < %(today)s
 		""",

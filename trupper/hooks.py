@@ -22,10 +22,29 @@ fixtures = [
 					"Sales Invoice-discount_schedule",
 					"Sales Invoice-discount_terms_template",
 					"Sales Invoice-discount_section",
+
+					"Purchase Invoice-discount_schedule",
+					"Purchase Invoice-discount_terms_template",
+					"Purchase Invoice-discount_section",
 				)
 			)
 		}
+	},
+	{
+		"doctype": "Property Setter",
+		"filters": {
+			"name": ("in",
+				(
+					"Sales Invoice-apply_discount_on-read_only",
+					"Sales Invoice-additional_discount_percentage-read_only",
+					"Sales Invoice-discount_amount-read_only",
 
+					"Purchase Invoice-discount_amount-read_only",
+					"Purchase Invoice-additional_discount_percentage-read_only",
+					"Purchase Invoice-apply_discount_on-read_only",
+				)
+			)
+		}
 	}
 ]
 # Includes in <head>
@@ -45,6 +64,7 @@ app_include_js = "/assets/trupper/js/trupper.js"
 # include js in doctype views
 doctype_js = {
 	"Sales Invoice" : "public/js/sales_invoice.js",
+	"Purchase Invoice" : "public/js/purchase_invoice.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -101,6 +121,9 @@ after_install = "trupper.install.after_install"
 doc_events = {
 	"Sales Invoice": {
 		"validate": "trupper.controllers.sales_invoice.validate",
+	},
+	"Purchase Invoice": {
+		"validate": "trupper.controllers.purchase_invoice.validate",
 	}
 }
 
@@ -136,4 +159,3 @@ scheduler_events = {
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "trupper.event.get_events"
 # }
-
