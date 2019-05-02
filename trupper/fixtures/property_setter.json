@@ -12,9 +12,6 @@
   "field_name": "apply_discount_on", 
   "modified": "2019-04-09 23:44:35.480757", 
   "name": "Sales Invoice-apply_discount_on-read_only", 
-  "parent": null, 
-  "parentfield": null, 
-  "parenttype": null, 
   "property": "read_only", 
   "property_type": "Check", 
   "value": "1"
@@ -32,9 +29,6 @@
   "field_name": "additional_discount_percentage", 
   "modified": "2019-04-09 23:44:35.486560", 
   "name": "Sales Invoice-additional_discount_percentage-read_only", 
-  "parent": null, 
-  "parentfield": null, 
-  "parenttype": null, 
   "property": "read_only", 
   "property_type": "Check", 
   "value": "1"
@@ -52,9 +46,6 @@
   "field_name": "discount_amount", 
   "modified": "2019-04-09 23:44:35.490652", 
   "name": "Sales Invoice-discount_amount-read_only", 
-  "parent": null, 
-  "parentfield": null, 
-  "parenttype": null, 
   "property": "read_only", 
   "property_type": "Check", 
   "value": "1"
@@ -72,9 +63,6 @@
   "field_name": "apply_discount_on", 
   "modified": "2019-04-09 23:44:35.480757", 
   "name": "Purchase Invoice-apply_discount_on-read_only", 
-  "parent": null, 
-  "parentfield": null, 
-  "parenttype": null, 
   "property": "read_only", 
   "property_type": "Check", 
   "value": "1"
@@ -92,9 +80,6 @@
   "field_name": "additional_discount_percentage", 
   "modified": "2019-04-09 23:44:35.486560", 
   "name": "Purchase Invoice-additional_discount_percentage-read_only", 
-  "parent": null, 
-  "parentfield": null, 
-  "parenttype": null, 
   "property": "read_only", 
   "property_type": "Check", 
   "value": "1"
@@ -112,9 +97,6 @@
   "field_name": "discount_amount", 
   "modified": "2019-04-09 23:44:35.490652", 
   "name": "Purchase Invoice-discount_amount-read_only", 
-  "parent": null, 
-  "parentfield": null, 
-  "parenttype": null, 
   "property": "read_only", 
   "property_type": "Check", 
   "value": "1"

@@ -98,9 +98,6 @@ def get_unpaid_invoices():
 			)
 		""", { "today": today() })
 
-	# now it's a good time to delete the overdue discount terms
-	_delete_overdue_discounts_terms()
-
 	return [ get_doc(doctype, docname) for docname, doctype in unpaid_invoices ]
 
 
@@ -199,6 +196,15 @@ def submit_unpaid_invoices(draft_invoices):
 
 		doc.submit()
 
+	# Now it's a good time to delete the overdue discount terms
+
+	_delete_overdue_discounts_terms()
+
+	# Reassign the index of the Discount Terms table
+
+	_reassign_idx_of_discount_terms(draft_invoices)
+
+
 def _delete_overdue_discounts_terms():
 	from frappe import db
 	from frappe.utils import today
@@ -212,6 +218,19 @@ def _delete_overdue_discounts_terms():
 				`tabDiscount Schedule`.parenttype in ("Purchase Invoice", "Sales Invoice")
 				And `tabDiscount Schedule`.parentfield = "discount_schedule"
 				And `tabDiscount Schedule`.due_date < %(today)s
+				And `tabDiscount Schedule`.docstatus = 1
 		""",
 		{ "today": today() }
 	)
+
+def _reassign_idx_of_discount_terms(invoice_list):
+	from frappe import db
+
+	for d in invoice_list:
+		# reload from the db
+		# to get the lastest doc
+		
+		d.reload()
+
+		for idx, dd in enumerate(d.get("discount_schedule", [])):
+			db.set(dd, "idx", idx + 1L)

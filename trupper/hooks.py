@@ -18,14 +18,18 @@ fixtures = [
 		"doctype": "Custom Field",
 		"filters": {
 			"name": ("in",
-			    (
+				(
 					"Sales Invoice-discount_schedule",
 					"Sales Invoice-discount_terms_template",
 					"Sales Invoice-discount_section",
+					"Sales Invoice-update_discount_terms_table",
 
 					"Purchase Invoice-discount_schedule",
 					"Purchase Invoice-discount_terms_template",
 					"Purchase Invoice-discount_section",
+					"Purchase Invoice-update_discount_terms_table",
+
+					"Accounts Settings-additional_discount_only",
 				)
 			)
 		}

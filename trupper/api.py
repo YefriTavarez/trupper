@@ -26,19 +26,20 @@ def get_discount_terms(terms_template, posting_date=None, total=None, bill_date=
 @frappe.whitelist()
 def get_discount_term_details(term, posting_date=None, total=None, bill_date=None):
 	term_details = frappe._dict()
+
 	if isinstance(term, basestring):
 		term = frappe.get_doc("Discount Term", term)
 	else:
 		term_details.discount_term = term.discount_term
 
-	discount_amount = flt(term.discount_rate) * flt(total) / 100
+	discount_amount = flt(term.discount_rate) * flt(total) / 100.000
 
 	term_details.update({
 		"description": term.description,
 		"discount_rate": term.discount_rate,
 		"discount_amount": discount_amount,
 		"expire_in_days": term.expire_in_days,
-    })
+	})
 
 	if bill_date:
 		term_details.due_date = get_due_date(term, bill_date)
