@@ -4,7 +4,7 @@
 
 from __future__ import unicode_literals
 
-def add_to_cancelled_invoices(sales_invoice):
+def add_to_cancelled_invoices(invoice_type, invoice_name):
 	from frappe import new_doc
 
 	# Create a new record
@@ -12,7 +12,10 @@ def add_to_cancelled_invoices(sales_invoice):
 
 	# Update the new record with passed invoice id
 
-	doc.sales_invoice = sales_invoice
+	doc.update({
+		"invoice_type": invoice_type,
+		"invoice_name": invoice_name,
+	})
 
 	# Save to the database to persist
 

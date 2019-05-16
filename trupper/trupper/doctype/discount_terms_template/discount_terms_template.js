@@ -3,6 +3,6 @@
 
 frappe.ui.form.on('Discount Terms Template', {
 	refresh: frm => {
-		// pass
+		frm.add_fetch("discount_term", "description", "description");
 	}
 });

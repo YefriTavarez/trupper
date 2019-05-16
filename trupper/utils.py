@@ -155,7 +155,7 @@ def add_record_to_cancelled_invoices(draft_invoices):
 	from . import add_to_cancelled_invoices
 
 	for doc in draft_invoices:
-		add_to_cancelled_invoices(doc.name)
+		add_to_cancelled_invoices(doc.doctype, doc.name)
 
 
 def remove_discount_to_unpaid_invoices(draft_invoices):
@@ -229,7 +229,7 @@ def _reassign_idx_of_discount_terms(invoice_list):
 	for d in invoice_list:
 		# reload from the db
 		# to get the lastest doc
-		
+
 		d.reload()
 
 		for idx, dd in enumerate(d.get("discount_schedule", [])):

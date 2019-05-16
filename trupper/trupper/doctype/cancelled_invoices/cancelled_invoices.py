@@ -12,20 +12,17 @@ class CancelledInvoices(Document):
     def validate(self):
         from frappe import throw, db, _
 
-        # Set doctype to a variable for easier manipulation
-        doctype = "Sales Invoice"
-
         # Check if the document exists in the Database
 
-        if not db.exists(doctype, self.sales_invoice):
+        if not db.exists(self.invoice_type, self.invoice_name):
             throw(_("Sales Invoice: {} not found")
-                  .format(self.sales_invoice))
+                  .format(self.invoice_name))
 
         # Fetch the document docstatus
-        docstatus = db.get_value(doctype, self.sales_invoice,
+        docstatus = db.get_value(self.invoice_type, self.invoice_name,
                                  "docstatus")
 
         # Check the docstatus founds
         if docstatus != 0:
             throw(_("Invalid Sales Invoice docstatus {}")
-                  .format(self.sales_invoice))
+                  .format(self.invoice_name))
