@@ -9,6 +9,7 @@ def get_data():
 			"color": "#232315",
 			"icon": "fa fa-free-code-camp",
 			"type": "module",
-			"label": _("TRUPPER")
+			"label": _("TRUPPER"),
+			"hidden": True,
 		}
 	]
