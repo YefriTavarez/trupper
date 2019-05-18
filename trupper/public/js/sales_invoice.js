@@ -1,9 +1,27 @@
 frappe.ui.form.on("Sales Invoice", {
+	refresh: frm => {
+		frm.trigger("run_refresh_methods");
+	},
+	onload_post_render: frm => {
+		// pass
+	},
+	run_refresh_methods: frm => {
+		$.map([
+			"toggle_read_only_discounts_fields",
+		], event => {
+			frm.trigger(event);
+		});
+	},
 	posting_date: frm => {
 		frm.trigger("sync_discount_terms_table");
 	},
 	discount_terms_template: frm => {
-		frm.trigger("sync_discount_terms_table");
+		$.map([
+			"sync_discount_terms_table",
+			"toggle_read_only_discounts_fields",
+		], event => {
+			frm.trigger(event);
+		});
 	},
 	update_discount_terms_table: frm => {
 		frm.trigger("sync_discount_terms_table");
@@ -52,6 +70,21 @@ frappe.ui.form.on("Sales Invoice", {
 			"discount_amount":  discount_amount,
 		}, (fieldname, value) => {
 			frm.set_value(fieldname, value);
+		});
+	},
+	toggle_read_only_discounts_fields: frm => {
+		const { doc } = frm;
+
+		$.map([
+			"apply_discount_on",
+			"additional_discount_percentage",
+			"discount_amount",
+		], fieldname => {
+			frappe.run_serially([
+				()=> frappe.timeout(0.5),
+				() => frm.toggle_enable(fieldname,
+					!doc.discount_terms_template),
+			])
 		});
 	},
 });
